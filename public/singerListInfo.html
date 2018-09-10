@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>歌手 - 酷狗音乐</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+<div id="header">
+    <top-hd></top-hd>
+</div>
+<div class="info-content" id="app">
+    <div class="top-goback">
+        <div class="page-title" v-text="info.singername"></div>
+        <div class="goback" id="goback">
+            <i></i>
+        </div>
+    </div>
+    <div class="rank-info-hd">
+        <img :src="info.imgurl|toUrl" class="bg_img">
+    </div>
+    <div class="list_bg">
+        <div class="intro-box">
+            <p v-text="info.intro"></p>
+            <i class="intro-icon"></i>
+        </div>
+        <ul class="songs_list" id="songs_list">
+            <li v-for="song in songs.list">
+                <div class="song_name" v-text="song.filename"></div>
+                <i class="download_btn"></i>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="loading">
+    <img src="images/timg.gif">
+</div>
+<script>
+    $.ajax({
+        url: "/ma",
+        data: {urls: "http://m.kugou.com/singer/info"+location.search+"&curPage=1&totalPage=8&json=true"},
+        success: function (dataList) {
+            $(".loading").hide();
+            $(".info-content").show();
+            console.log(dataList);
+            new Vue({
+                el: "#app",
+                data: dataList,
+                filters: {
+                    toUrl: function (imgUrl) {
+                        return imgUrl.replace("{size}","400");
+                    }
+                }
+            });
+            $(".intro-icon").click(function () {
+                $(this).toggleClass("open_icon");
+                $(".intro-box").toggleClass("intro-box-auto");
+            });
+            $("#goback").click(function () {
+                history.back();
+            });
+            $("title").text(dataList.info.singername+"的歌，"+dataList.info.singername+"好听的歌，"+dataList.info.singername+"最新歌曲_酷狗音乐");
+        }
+    });
+</script>
+</body>
+</html>

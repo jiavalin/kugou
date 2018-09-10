@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>歌手列表 - 酷狗音乐</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+    </div>
+    <div class="connect" id="app">
+        <div class="top-goback singer-top">
+            <div class="page-title" v-text="classname">热门歌手</div>
+            <div class="goback" id="goback">
+                <i></i>
+            </div>
+        </div>
+        <ul class="rank_list" style="">
+            <li v-for="singer in singers.list.info">
+                <a :href="'/singerListInfo.html?singerid='+singer.singerid" class="clear">
+                    <img :src="singer.imgurl|toUrl" class="singer-img">
+                    <div class="singer-img-content" v-text="singer.singername"></div>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="loading">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        $.ajax({
+            url: "/ma",
+            data: {urls: "http://m.kugou.com/singer/list"+location.search+"&curPage=1&totalPage=1&pageSize=50&json=true"},
+            success: function (data) {
+                $(".loading").hide();
+                $(".connect").show();
+                console.log(data);
+                new Vue({
+                    el: "#app",
+                    data: data,
+                    filters: {
+                        toUrl: function (imgUrl) {
+                            return imgUrl.replace("{size}","400")
+                        }
+                    }
+                });
+                $("#goback").click(function () {
+                    history.back();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>搜索 - 酷狗音乐</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/swiper.min.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/swiper.min.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+    </div>
+    <div class="connect" style="display: block">
+        <div class="top-goback singer-top">
+            <div class="page-title">搜索</div>
+            <div class="goback" id="goback">
+                <i></i>
+            </div>
+        </div>
+        <div class="search-box">
+            <input type="text" class="search-keyword" placeholder="歌手/歌名/拼音" id="keyword">
+            <input type="button" class="search-btn " value="搜索" id="searchBtn">
+            <span class="search-icon"></span>
+        </div>
+        <div class="hot-search">
+            <div class="hot-search-hd">最近热门</div>
+            <ul class="songs_list" id="hot_list">
+                <li><div class="song_name">独家首发</div></li>
+                <li><div class="song_name">精彩综艺</div></li>
+                <li><div class="song_name">明日之子</div></li>
+                <li><div class="song_name">金曲捞</div></li>
+                <li><div class="song_name">ACG</div></li>
+                <li><div class="song_name">儿歌大全</div></li>
+                <li><div class="song_name">古风好歌</div></li>
+                <li><div class="song_name">洗脑电音</div></li>
+            </ul>
+        </div>
+        <div class="search_result" id="app">
+            <div class="search-result-hd" v-text="'共有'+total+'条结果'"></div>
+            <ul class="songs_list" id="songs_list">
+                <li v-for="song in info">
+                    <div class="song_name" v-text="song.filename"></div>
+                    <i class="download_btn"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="loading" style="display: none">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        function search(keyword){
+            $.ajax({
+                url: "/ma",
+                data: {urls: "http://mobilecdn.kugou.com/api/v3/search/song?json=true&keyword="+keyword+"&page=1&pagesize=20&showtype=1"},
+                timeout:6000,
+                success: function (data) {
+                    $(".loading").hide();
+                    $(".hot-search").hide();
+                    $(".search_result").show();
+                    console.log(data);
+                    new Vue({
+                        el: '#app',
+                        data: data.data
+                    })
+                }
+            });
+        }
+        $(".search-btn").click(function () {
+            $(".loading").show();
+            var keyword=$("#keyword").val();
+            console.log("http://mobilecdn.kugou.com/api/v3/search/song?json=true&keyword="+keyword+"&page=1&pagesize=20&showtype=1");
+            search(keyword);
+        });
+        $("#hot_list li").click(function () {
+            var keyword=$(this).children("div").text();
+            console.log(keyword);
+            search(keyword);
+        });
+        $("#goback").click(function () {
+            history.back();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酷狗-歌手</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+        <top-nav></top-nav>
+    </div>
+    <div class="connect" id="app">
+        <ul class="singer_list" v-for="ul in singers">
+            <li v-for="li in ul"><a :href="'/singerInfo.html?classid='+li.classid"><span v-text="li.classname"></span><i class="panel-img-arrow"></i></a></li>
+        </ul>
+    </div>
+    <div class="loading">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        $.ajax({
+            url: "/ma",
+            data: {urls: "http://m.kugou.com/singer/class?json=true"},
+            success: function (data) {
+                $(".loading").hide();
+                $(".connect").show();
+                var singers=data.list;
+                var txtArr=[];
+                var dataArr=[];
+//                for(var i=0;i<singers.length;i++){
+//                    var singerArr=[];
+//                    if(txtArr==""){
+//                        txtArr.push(singers[i].classname.substr(0,2));
+//                        for(var j=0;j<singers.length;j++){
+//                            if(txtArr[txtArr.length-1]==singers[j].classname.substr(0,2)){
+//                                singerArr.push(singers[j]);
+//                            }
+//                        }
+//                        dataArr.push(singerArr);
+//                    }else{
+//                        if(txtArr[txtArr.length-1]!=singers[i].classname.substr(0,2)){
+//                            txtArr.push(singers[i].classname.substr(0,2));
+//                            for(var j=0;j<singers.length;j++){
+//                                if(txtArr[txtArr.length-1]==singers[j].classname.substr(0,2)){
+//                                    singerArr.push(singers[j]);
+//                                }
+//                            }
+//                            dataArr.push(singerArr);
+//                        }
+//                    }
+//                }
+
+                txtArr=[singers[0].classname.substr(0,2)];
+                for(var i=0;i<singers.length;i++){
+                    if(txtArr[txtArr.length-1]!=singers[i].classname.substr(0,2)){
+                        txtArr.push(singers[i].classname.substr(0,2));
+                    }
+                }
+//                console.log(txtArr);
+                for(var i=0;i<txtArr.length;i++){
+                    var singerArr=[];
+                    for(var j=0;j<singers.length;j++){
+                        if(txtArr[i]==singers[j].classname.substr(0,2)) {
+                            singerArr.push(singers[j]);
+                        }
+                    }
+                    dataArr.push(singerArr);
+                }
+//                console.log(dataArr);
+                new Vue({
+                    el: "#app",
+                    data: {singers: dataArr}
+                });
+            }
+        });
+    </script>
+</body>
+</html>

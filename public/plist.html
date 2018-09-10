@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酷狗-歌单</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+        <top-nav></top-nav>
+    </div>
+    <div class="connect" id="app">
+        <ul class="rank_list">
+            <li v-for="song in info">
+                <a :href="'/plistInfo.html?specialid='+song.specialid" class="clear">
+                    <img :src="song.imgurl|toUrl" class="panel-img">
+                    <div class="panel-img-content">
+                        <p v-text="song.specialname"></p>
+                        <p><i class="icon-music"></i><span v-text="song.playcount"></span></p>
+                    </div>
+                    <i class="panel-img-arrow"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="loading">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        $.ajax({
+           url: "/ma",
+            data: {urls: "http://m.kugou.com/plist/index?json=true"},
+            success: function (data) {
+                $(".loading").hide();
+                $(".connect").show();
+                console.log(data);
+                new Vue({
+                    el: "#app",
+                    data: data.plist.list,
+                    filters: {
+                        toUrl: function (imgurl) {
+                            return imgurl.replace("{size}","400");
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>酷狗-排行</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+        <top-nav></top-nav>
+    </div>
+    <div class="connect" id="app">
+        <ul class="rank_list">
+            <li v-for="rank in rank.list">
+                <a :href="'/rankInfo.html?rankid='+rank.rankid" class="clear">
+                    <img :src="rank.imgurl|toUrl" class="panel-img">
+                    <div class="panel-img-content" v-text="rank.rankname"></div>
+                    <i class="panel-img-arrow"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="loading">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        $.ajax({
+            url: "/ma",
+            data: {urls: "http://m.kugou.com/rank/list&json=true"},
+            success: function (dataList) {
+                $(".loading").hide();
+                $(".connect").show();
+                console.log(dataList);
+                new Vue({
+                    el: "#app",
+                    data: dataList,
+                    filters: {
+                        toUrl: function (imgurl) {
+                            return imgurl.replace("{size}","400");
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

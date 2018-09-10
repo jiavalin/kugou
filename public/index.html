@@ -1,0 +1,114 @@
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+    <title>酷狗</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/swiper.min.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/swiper.min.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+        <top-nav></top-nav>
+    </div>
+    <div class="connect" id="app">
+        <!--轮播图-->
+        <div class="swiper-container" id="banner">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-for="ba in banner">
+                    <a :href="ba.extra.tourl"><img :src="ba.imgurl"></a>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+        <!--歌曲列表-->
+        <ul class="songs_list" id="songs_list">
+            <li v-for="song in data" v-on:click="play(song.hash,song.filename)">
+                <div class="song_name" v-text="song.filename"></div>
+                <i class="download_btn"></i>
+            </li>
+        </ul>
+    </div>
+    <div class="ft-player" id="ft-player">
+        <a href="javascript:;" class="ft-go-info">
+            <div class="ft-left">
+                <img :src="songData.imgUrl|toUrl">
+            </div>
+            <div class="ft-center">
+                <p v-text="songData.songName">ddd</p>
+                <p v-text="songData.singerName">ffff</p>
+            </div>
+        </a>
+        <div class="ft-right">
+            <i class="ft-btn btn-pause" id="btnPlay"></i>
+            <i class="ft-btn btn-next"></i>
+            <i class="ft-btn btn-download"></i>
+        </div>
+        <audio id="audio" :src="songData.url" controls autoplay="false" style="display:none;position: fixed;top:500px;left:0;"></audio>
+    </div>
+    <div class="loading">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        $.ajax({
+            url: "/ma",
+            data: {urls: "http://m.kugou.com/?json=true"},
+            success: function (songData) {
+                $(".loading").hide();
+                $(".connect").show();
+//                console.log(songData);
+                var thisdata={songData:{imgUrl:"",songName:"",singerName:""}};
+                new Vue({
+                    el: "#ft-player",
+                    data: thisdata,
+                    filters: {
+                        toUrl: function (imgurl) {
+                            return imgurl.replace("{size}","400");
+                        }
+                    }
+                });
+                new Vue({
+                    el: "#app",
+                    data: songData,
+                    methods: {
+                        play: function (hash) {
+                            $("#ft-player").show();
+                            $(".connect").css("paddingBottom","4.2143rem");
+                            $.ajax({
+                                url: "/ma",
+                                data: {urls: "http://m.kugou.com/app/i/getSongInfo.php?cmd=playInfo&hash="+hash},
+                                success: function (data) {
+                                    console.log(data);
+                                    thisdata.songData=data;
+                                }
+                            });
+                        }
+                    }
+                });
+                var swiper = new Swiper('.swiper-container', {
+                    autoplay: {
+                        disableOnInteraction: false
+                    },
+                    loop : true,
+                    pagination: {
+                        el: '.swiper-pagination'
+                    }
+                });
+                $("#btnPlay").click(function () {
+                    if($(this).hasClass("btn-pause")){
+                        $("#audio")[0].pause();
+                    }else{
+                        $("#audio")[0].play();
+                    }
+                    $(this).toggleClass("btn-pause");
+                    $(this).toggleClass("btn-play");
+                });
+            }
+        });
+    </script>
+</body>
+</html>

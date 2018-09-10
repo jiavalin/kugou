@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <link rel="stylesheet" href="stylesheets/index.css">
+    <script src="javascripts/jquery-3.3.1.js"></script>
+    <script src="javascripts/vue.js"></script>
+    <script src="javascripts/public.js"></script>
+</head>
+<body>
+    <div id="header">
+        <top-hd></top-hd>
+    </div>
+    <div class="info-content" id="app">
+        <div class="top-goback">
+            <div class="page-title" v-text="info.rankname"></div>
+            <div class="goback" id="goback">
+                <i></i>
+            </div>
+        </div>
+        <div class="rank-info-hd">
+            <img :src="info.banner7url|toUrl" class="bg_img">
+            <div class="rank-info-time">
+                <span></span>
+            </div>
+        </div>
+        <div class="list_bg">
+            <ul class="songs_list" id="songs_list">
+                <li v-for="(song,index) in songs.list">
+                    <div class="song_name rank-song-name" v-text="song.filename"></div>
+                    <i class="download_btn"></i>
+                    <span class="song_number" v-text="index+1" :class="{one:index==0,two:index==1,three:index==2}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="loading">
+        <img src="images/timg.gif">
+    </div>
+    <script>
+        $.ajax({
+            url: "/ma",
+            data: {urls: "http://m.kugou.com/rank/info"+location.search+"&curPage=1&totalPage=2&json=true"},
+            success: function (dataList) {
+                $(".loading").hide();
+                $(".info-content").show();
+//                console.log(dataList);
+                $(".rank-info-time span").text("上次更新时间："+new Date().toLocaleDateString().replace(/\//g,"-"));
+                new Vue({
+                    el: "#app",
+                    data: dataList,
+                    filters: {
+                        toUrl: function (imgurl) {
+                            return imgurl.replace("{size}",400);
+                        }
+                    }
+                });
+                $("#goback").click(function () {
+                    history.back();
+                });
+                $("title").text(dataList.info.rankname+"_酷狗音乐");
+            }
+        });
+    </script>
+</body>
+</html>
